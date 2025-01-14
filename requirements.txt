@@ -1,0 +1,6 @@
+pip install flask
+pip install opentelemetry-api opentelemetry-sdk
+pip install opentelemetry-instrumentation-flask
+pip install opentelemetry-instrumentation-requests
+pip install opentelemetry-exporter-jaeger
+pip install opentelemetry-instrumentation opentelemetry-instrumentation-flask
