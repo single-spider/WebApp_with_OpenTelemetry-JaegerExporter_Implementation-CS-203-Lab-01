@@ -1,0 +1,218 @@
+{
+    "name": "GET /add_course",
+    "context": {
+        "trace_id": 99029838851028262722558431281896309956,
+        "span_id": 16461861087992256735,
+        "trace_flags": 1,
+        "is_remote": false
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": 1736868178231326600,
+    "end_time": 1736868178232326400,
+    "status": {
+        "status_code": "StatusCode.UNSET",
+        "description": null
+    },
+    "attributes": {
+        "http.method": "GET",
+        "http.server_name": "127.0.0.1",
+        "http.scheme": "http",
+        "net.host.name": "127.0.0.1:5000",
+        "http.host": "127.0.0.1:5000",
+        "net.host.port": 5000,
+        "http.target": "/add_course",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 16658,
+        "http.user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
+        "http.flavor": "1.1",
+        "http.route": "/add_course",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.29.0",
+            "service.name": "course-catalog-service"
+        }
+    }
+}
+{
+    "name": "GET /",
+    "context": {
+        "trace_id": 101861838961826992506770045100283066521,
+        "span_id": 4729142967522896544,
+        "trace_flags": 1,
+        "is_remote": false
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": 1736868179533142100,
+    "end_time": 1736868179534153800,
+    "status": {
+        "status_code": "StatusCode.UNSET",
+        "description": null
+    },
+    "attributes": {
+        "http.method": "GET",
+        "http.server_name": "127.0.0.1",
+        "http.scheme": "http",
+        "net.host.name": "127.0.0.1:5000",
+        "http.host": "127.0.0.1:5000",
+        "net.host.port": 5000,
+        "http.target": "/",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 16660,
+        "http.user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
+        "http.flavor": "1.1",
+        "http.route": "/",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.29.0",
+            "service.name": "course-catalog-service"
+        }
+    }
+}
+{
+    "name": "load_courses",
+    "context": {
+        "trace_id": 238420907210971666355069971994476080499,
+        "span_id": 8548895048863872488,
+        "trace_flags": 1,
+        "is_remote": false
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": 5962741248880528245,
+    "start_time": 1736868180483738300,
+    "end_time": 1736868180484737200,
+    "status": {
+        "status_code": "StatusCode.UNSET",
+        "description": null
+    },
+    "attributes": {
+        "course.file_exists": true
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.29.0",
+            "service.name": "course-catalog-service"
+        }
+    }
+}
+{
+    "name": "load_courses",
+    "context": {
+        "trace_id": 238420907210971666355069971994476080499,
+        "span_id": 5962741248880528245,
+        "trace_flags": 1,
+        "is_remote": false
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": 9256552331007538986,
+    "start_time": 1736868180483738300,
+    "end_time": 1736868180484737200,
+    "status": {
+        "status_code": "StatusCode.UNSET",
+        "description": null
+    },
+    "attributes": {},
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.29.0",
+            "service.name": "course-catalog-service"
+        }
+    }
+}
+{
+    "name": "course_catalog",
+    "context": {
+        "trace_id": 238420907210971666355069971994476080499,
+        "span_id": 9256552331007538986,
+        "trace_flags": 1,
+        "is_remote": false
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": 7500898901621851496,
+    "start_time": 1736868180483738300,
+    "end_time": 1736868180484737200,
+    "status": {
+        "status_code": "StatusCode.UNSET",
+        "description": null
+    },
+    "attributes": {
+        "http.method": "GET",
+        "http.url": "http://127.0.0.1:5000/catalog",
+        "http.status_code": 200,
+        "user.ip": "127.0.0.1",
+        "course.count": 3
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.29.0",
+            "service.name": "course-catalog-service"
+        }
+    }
+}
+{
+    "name": "GET /catalog",
+    "context": {
+        "trace_id": 238420907210971666355069971994476080499,
+        "span_id": 7500898901621851496,
+        "trace_flags": 1,
+        "is_remote": false
+    },
+    "kind": "SpanKind.SERVER",
+    "parent_id": null,
+    "start_time": 1736868180483738300,
+    "end_time": 1736868180484737200,
+    "status": {
+        "status_code": "StatusCode.UNSET",
+        "description": null
+    },
+    "attributes": {
+        "http.method": "GET",
+        "http.server_name": "127.0.0.1",
+        "http.scheme": "http",
+        "net.host.name": "127.0.0.1:5000",
+        "http.host": "127.0.0.1:5000",
+        "net.host.port": 5000,
+        "http.target": "/catalog",
+        "net.peer.ip": "127.0.0.1",
+        "net.peer.port": 16661,
+        "http.user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
+        "http.flavor": "1.1",
+        "http.route": "/catalog",
+        "http.status_code": 200
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.29.0",
+            "service.name": "course-catalog-service"
+        }
+    }
+}
