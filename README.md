@@ -115,6 +115,6 @@ The application is instrumented with OpenTelemetry for tracing and telemetry dat
 - [Jaeger Documentation](https://www.jaegertracing.io/)
 
 ## Project Contributors
-- Divyansh Saini
-- Gaurav Srivastava
+- Divyansh Saini (Lead Developer)    
+- Gaurav Srivastava (Lead Developer)
 
