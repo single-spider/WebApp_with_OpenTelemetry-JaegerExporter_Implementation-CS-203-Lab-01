@@ -85,15 +85,6 @@ def course_details(code):
         return redirect(url_for('course_catalog'))
     return render_template('course_details.html', course=course)
 
-@app.route("/manual-trace")
-def manual_trace():
-    # Start a span manually for custom tracing
-    with tracer.start_as_current_span("manual-span", kind=SpanKind.SERVER) as span:
-        span.set_attribute("http.method", request.method)
-        span.set_attribute("http.url", request.url)
-        span.add_event("Processing request")
-        return "Manual trace recorded!", 200
-
 @app.route("/auto-instrumented")
 def auto_instrumented():
     # Automatically instrumented via FlaskInstrumentor
