@@ -50,25 +50,21 @@ The **Course Information Portal** is a Flask-based web application that allows u
 ### Installation
 1. Clone this repository:
    ```bash
-   git clone https://github.com/<your-username>/course-information-portal.git
+   gh repo clone single-spider/WebApp_with_OpenTelemetry-JaegerExporter_Implementation-CS-203-Lab-01
    ```
-2. Navigate to the project directory:
-   ```bash
-   cd course-information-portal
-   ```
-3. Install required Python dependencies:
+2. Install required Python dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-4. Start Jaeger locally (if not already running):
+3. Start Jaeger locally (if not already running):
    ```bash
    docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp -p 5778:5778 -p 16686:16686 -p 14268:14268 -p 14250:14250 -p 9411:9411 jaegertracing/all-in-one:1.41
    ```
-5. Run the application:
+4. Run the application:
    ```bash
    python app.py
    ```
-6. Access the application in your browser at `http://127.0.0.1:5000/`.
+5. Access the application in your browser at `http://127.0.0.1:5000/`.
 
 ---
 
@@ -85,6 +81,7 @@ course-information-portal/
 │   └── add_course.html     # Add course form template
 ├── static/
 │   └── styles.css          # CSS for styling
+├── requirements.txt        # Python dependencies
 └── README.md               # Project documentation
 ```
 
@@ -112,13 +109,12 @@ The application is instrumented with OpenTelemetry for tracing and telemetry dat
 
 ---
 
-## License
-This project is licensed under the [MIT License](LICENSE).
-
----
-
 ## Acknowledgments
 - [Flask Documentation](https://flask.palletsprojects.com/)
 - [OpenTelemetry Documentation](https://opentelemetry.io/)
 - [Jaeger Documentation](https://www.jaegertracing.io/)
+
+## Project Contributors
+- Divyansh Saini
+- Gaurav Srivastava
 
