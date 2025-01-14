@@ -5,14 +5,8 @@
 <head>
     <title>Add Course</title>
     <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
+        
+        
         form {
             width: 500px;
             margin: 0 auto;
@@ -57,7 +51,7 @@
     </style>
 </head>
 <body>
-    <h1>Add a New Course</h1>
+    <h2 class="text-center">Add a New Course</h2>
     <form method="post">
         <label for="code">Course Code:</label>
         <input type="text" id="code" name="code" required>
@@ -88,7 +82,10 @@
 
         <input type="submit" value="Add Course">
     </form>
-    <a class="back-link" href="{{ url_for('index') }}">Back to Home</a>
+    <br>
+    <p class="text-center mt-4">
+        <a href="{{ url_for('course_catalog') }}" class="btn btn-primary btn-lg">Back to Catalog</a>
+    </p>
 </body>
 {% endblock %}
 </html>
