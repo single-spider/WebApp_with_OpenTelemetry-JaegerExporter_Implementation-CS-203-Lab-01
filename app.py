@@ -9,6 +9,7 @@ from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.trace import SpanKind
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.trace import ReadableSpan
+import logging
 
 # --- Flask App Initialization ---
 app = Flask(__name__)
@@ -17,15 +18,60 @@ app.secret_key = 'secret'
 # --- Determine app.py's directory ---
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 
-
 # --- Data Folder and File Paths ---
 DATA_FOLDER = os.path.join(APP_DIR, 'data')
 COURSE_FILE = os.path.join(DATA_FOLDER, 'course_catalog.json')
 SPAN_LOG_FILE = os.path.join(DATA_FOLDER, 'spans.json')
-
+LOG_FILE = os.path.join(DATA_FOLDER, 'app_logs.json')  # New log file path
 
 # Create the data folder if it doesn't exist
 os.makedirs(DATA_FOLDER, exist_ok=True)
+
+# --- Logging Setup ---
+# Create a logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# Create a console handler and set its level
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+
+# Create a formatter for console output
+console_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(console_formatter)
+
+# Add the console handler to the logger
+logger.addHandler(console_handler)
+
+# --- JSON Log File Handler ---
+class JSONLogFormatter(logging.Formatter):
+    def format(self, record):
+        log_record = {
+            "timestamp": self.formatTime(record, self.datefmt),
+            "name": record.name,
+            "level": record.levelname,
+            "message": record.getMessage(),
+            "filename": record.filename,
+            "line_no": record.lineno,
+        }
+        if record.exc_info:
+            log_record["exception"] = self.formatException(record.exc_info)
+        return json.dumps(log_record)
+
+json_file_handler = logging.FileHandler(LOG_FILE)
+json_file_handler.setLevel(logging.DEBUG)
+
+# Create a JSON formatter and add it to the file handler
+json_formatter = JSONLogFormatter()
+json_file_handler.setFormatter(json_formatter)
+
+# Add the JSON file handler to the logger
+logger.addHandler(json_file_handler)
+
+# --- Disable Flask's default request logging ---
+flask_logger = logging.getLogger('werkzeug')
+flask_logger.propagate = False
+flask_logger.addHandler(logging.NullHandler())
 
 # --- JSONFileSpanExporter ---
 class JSONFileSpanExporter(SpanExporter):
@@ -105,13 +151,17 @@ def load_courses():
             ensure_directory_exists(COURSE_FILE)  # Ensure 'data' folder exists
             if not os.path.exists(COURSE_FILE):
                 load_span.set_attribute("course.file_exists", False)
+                logger.warning("Course file not found.")
                 return []
             with open(COURSE_FILE, 'r') as file:
                 load_span.set_attribute("course.file_exists", True)
-                return json.load(file)
+                courses = json.load(file)
+                logger.info(f"Successfully loaded {len(courses)} courses from file.")
+                return courses
         except Exception as e:
             load_span.record_exception(e)
             load_span.set_status(trace.Status(trace.StatusCode.ERROR))
+            logger.error(f"Error loading courses: {e}")
             return []
 
 def save_courses(data):
@@ -124,11 +174,12 @@ def save_courses(data):
             with open(COURSE_FILE, 'w') as file:
                 json.dump(courses, file, indent=4)
             save_span.set_attribute("course.saved", True)
+            logger.info(f"Course '{data['name']}' saved successfully.")
         except Exception as e:
             save_span.record_exception(e)
             save_span.set_status(trace.Status(trace.StatusCode.ERROR))
             save_span.set_attribute("course.saved", False)
-
+            logger.error(f"Error saving course: {e}")
 
 # --- OpenTelemetry Setup ---
 resource = Resource.create({"service.name": "course-catalog-service"})
@@ -139,7 +190,7 @@ tracer = trace.get_tracer(__name__)
 jaeger_exporter = JaegerExporter(
     agent_host_name="localhost",
     agent_port=6831,
-)  # Replace with Jaeger Exporter when ready
+)
 
 # Create JSON file exporter
 json_exporter = JSONFileSpanExporter(filename=SPAN_LOG_FILE)
@@ -153,9 +204,11 @@ trace.get_tracer_provider().add_span_processor(jaeger_span_processor)
 trace.get_tracer_provider().add_span_processor(json_span_processor)
 
 FlaskInstrumentor().instrument_app(app)
-# App Routes for web pages
+
+# --- Routes ---
 @app.route('/')
 def index():
+    logger.info("Accessed index page.")
     return render_template('index.html')
 
 @app.route('/catalog')
@@ -169,6 +222,7 @@ def course_catalog():
             courses = load_courses()
             if courses:
                 span.set_attribute("course.count", len(courses))
+        logger.info("Accessed course catalog page.")
         return render_template('course_catalog.html', courses=courses)
 
 @app.route('/add_course', methods=['GET', 'POST'])
@@ -178,6 +232,17 @@ def add_course():
             span.set_attribute("http.method", request.method)
             span.set_attribute("http.url", request.url)
             span.set_attribute("user.ip", request.remote_addr)
+
+            # --- Simplified field check ---
+            if not all([request.form['code'], request.form['name'], request.form['instructor']]):
+                error_message = "All fields (course code, name, and instructor) are required."
+                span.set_status(trace.Status(trace.StatusCode.ERROR))
+                span.set_attribute("http.status_code", 400)
+                logger.error("User is missing a field while adding a course.")
+                flash(error_message, "error")
+                return render_template('add_course.html')
+
+            # --- If all fields are present, proceed with saving ---
             course = {
                 'code': request.form['code'],
                 'name': request.form['name'],
@@ -194,7 +259,9 @@ def add_course():
             span.set_attribute("course.name", course['name'])
             save_courses(course)
             flash(f"Course '{course['name']}' added successfully!", "success")
+            logger.info(f"Added course: {course['name']} ({course['code']})")
             return redirect(url_for('course_catalog'))
+    logger.info("Accessed add course page.")
     return render_template('add_course.html')
 
 @app.route('/course/<code>')
@@ -210,32 +277,38 @@ def course_details(code):
                 span.set_status(trace.Status(trace.StatusCode.ERROR))
                 span.record_exception(Exception(f"Course not found: {code}"))
                 span.set_attribute("http.status_code", 404)
+                logger.warning(f"Course details not found for code: {code}")
                 flash(f"No course found with code '{code}'.", "error")
                 return redirect(url_for('course_catalog'))
             span.set_attribute("http.status_code", 200)
             span.set_attribute("course.code", course['code'])
             span.set_attribute("course.name", course['name'])
+            logger.info(f"Accessed course details for: {course['name']} ({course['code']})")
             return render_template('course_details.html', course=course)
         except Exception as e:
             span.set_status(trace.Status(trace.StatusCode.ERROR))
             span.record_exception(e)
+            logger.error(f"Error loading course details: {e}")
             flash("An error occurred.", "error")
             return redirect(url_for('index'))
-        
-# To check jaeger instance connectivity
-# @app.route("/manual-trace")
-# def manual_trace():
-#     # Start a span manually for custom tracing
-#     with tracer.start_as_current_span("manual-span", kind=SpanKind.SERVER) as span:
-#         span.set_attribute("http.method", request.method)
-#         span.set_attribute("http.url", request.url)
-#         span.set_attribute("http.status_code", 200)
-#         span.add_event("Processing request")
-#         return "Manual trace recorded!", 200
 
-@app.route('/contacts')
-def contacts():
-    return render_template('contact.html')
+@app.route("/manual-trace")
+def manual_trace():
+    # Start a span manually for custom tracing
+    with tracer.start_as_current_span("manual-span", kind=SpanKind.SERVER) as span:
+        span.set_attribute("http.method", request.method)
+        span.set_attribute("http.url", request.url)
+        span.set_attribute("http.status_code", 200)
+        span.add_event("Processing request")
+        logger.info("Manual trace recorded.")
+        return "Manual trace recorded!", 200
+
+@app.route("/auto-instrumented")
+def auto_instrumented():
+    # Automatically instrumented via FlaskInstrumentor
+    logger.info("Accessed auto-instrumented page.")
+    return "This route is auto-instrumented!", 200
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
