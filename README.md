@@ -74,6 +74,8 @@ course-information-portal/
 ├── app.py                  # Main Flask application file
 ├── data/
 │   └── course_catalogue.json  # JSON file storing course data
+│   └── spans.json
+│   └── app_log.json
 ├── templates/
 │   ├── index.html          # Home page template
 │   ├── course_catalog.html # Course catalog page template
