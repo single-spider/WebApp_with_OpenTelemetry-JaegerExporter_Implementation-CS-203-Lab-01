@@ -292,22 +292,21 @@ def course_details(code):
             flash("An error occurred.", "error")
             return redirect(url_for('index'))
 
-@app.route("/manual-trace")
-def manual_trace():
-    # Start a span manually for custom tracing
-    with tracer.start_as_current_span("manual-span", kind=SpanKind.SERVER) as span:
-        span.set_attribute("http.method", request.method)
-        span.set_attribute("http.url", request.url)
-        span.set_attribute("http.status_code", 200)
-        span.add_event("Processing request")
-        logger.info("Manual trace recorded.")
-        return "Manual trace recorded!", 200
 
-@app.route("/auto-instrumented")
-def auto_instrumented():
-    # Automatically instrumented via FlaskInstrumentor
-    logger.info("Accessed auto-instrumented page.")
-    return "This route is auto-instrumented!", 200
+# @app.route("/manual-trace")
+# def manual_trace():
+#     # Start a span manually for custom tracing
+#     with tracer.start_as_current_span("manual-span", kind=SpanKind.SERVER) as span:
+#         span.set_attribute("http.method", request.method)
+#         span.set_attribute("http.url", request.url)
+#         span.set_attribute("http.status_code", 200)
+#         span.add_event("Processing request")
+#         logger.info("Manual trace recorded.")
+#         return "Manual trace recorded!", 200
+
+@app.route('/contacts')
+def contacts():
+    return render_template('contact.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
