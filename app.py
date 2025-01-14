@@ -136,7 +136,10 @@ trace.set_tracer_provider(TracerProvider(resource=resource))
 tracer = trace.get_tracer(__name__)
 
 # Configure Jaeger exporter
-jaeger_exporter = ConsoleSpanExporter()  # Replace with Jaeger Exporter when ready
+jaeger_exporter = JaegerExporter(
+    agent_host_name="localhost",
+    agent_port=6831,
+)  # Replace with Jaeger Exporter when ready
 
 # Create JSON file exporter
 json_exporter = JSONFileSpanExporter(filename=SPAN_LOG_FILE)
@@ -150,9 +153,7 @@ trace.get_tracer_provider().add_span_processor(jaeger_span_processor)
 trace.get_tracer_provider().add_span_processor(json_span_processor)
 
 FlaskInstrumentor().instrument_app(app)
-
-# --- Routes ---
-# (The rest of your route handling code remains the same)
+# App Routes for web pages
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -220,21 +221,18 @@ def course_details(code):
             span.record_exception(e)
             flash("An error occurred.", "error")
             return redirect(url_for('index'))
+        
+# To check jaeger instance connectivity
+# @app.route("/manual-trace")
+# def manual_trace():
+#     # Start a span manually for custom tracing
+#     with tracer.start_as_current_span("manual-span", kind=SpanKind.SERVER) as span:
+#         span.set_attribute("http.method", request.method)
+#         span.set_attribute("http.url", request.url)
+#         span.set_attribute("http.status_code", 200)
+#         span.add_event("Processing request")
+#         return "Manual trace recorded!", 200
 
-@app.route("/manual-trace")
-def manual_trace():
-    # Start a span manually for custom tracing
-    with tracer.start_as_current_span("manual-span", kind=SpanKind.SERVER) as span:
-        span.set_attribute("http.method", request.method)
-        span.set_attribute("http.url", request.url)
-        span.set_attribute("http.status_code", 200)
-        span.add_event("Processing request")
-        return "Manual trace recorded!", 200
-
-@app.route("/auto-instrumented")
-def auto_instrumented():
-    # Automatically instrumented via FlaskInstrumentor
-    return "This route is auto-instrumented!", 200
 
 if __name__ == '__main__':
     app.run(debug=True)
