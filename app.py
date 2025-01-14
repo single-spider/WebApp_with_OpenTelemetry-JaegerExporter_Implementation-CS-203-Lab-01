@@ -233,6 +233,9 @@ def course_details(code):
 #         span.add_event("Processing request")
 #         return "Manual trace recorded!", 200
 
+@app.route('/contacts')
+def contacts():
+    return render_template('contact.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
