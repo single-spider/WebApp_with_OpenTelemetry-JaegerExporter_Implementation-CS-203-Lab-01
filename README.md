@@ -1,5 +1,5 @@
 ##Flask Based WebAPP with Data-Logging using Open-Telemetry
-# Course Information Portal
+Authors: Gaurav Srivastava, Divyansh Saini
 
 ## Project Overview
 The **Course Information Portal** is a Flask-based web application that allows users to manage and explore a catalog of courses. It integrates OpenTelemetry for distributed tracing and telemetry data collection, providing insights into the application's performance and user interactions. The project also includes features for adding new courses, viewing course details, and exporting telemetry data to Jaeger.
