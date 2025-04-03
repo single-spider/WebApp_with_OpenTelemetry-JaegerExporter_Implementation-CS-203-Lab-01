@@ -1,4 +1,4 @@
-# CS203_Lab_01
+##Flask Based WebAPP with Data-Logging using Open-Telemetry
 # Course Information Portal
 
 ## Project Overview
