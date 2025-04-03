@@ -1,4 +1,4 @@
-##Flask Based WebAPP with Data-Logging using Open-Telemetry
+## Flask Based WebAPP with Data-Logging using Open-Telemetry
 Authors: Gaurav Srivastava, Divyansh Saini
 
 ## Project Overview
